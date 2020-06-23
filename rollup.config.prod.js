@@ -64,7 +64,10 @@ const plugins = [
   html({
     input: './public/index.html',
     output: './build/index.html',
-    template: { appBundle: 'index.js' },
+    template: {
+      appJS: 'index.js',
+      appCSS: 'index.css',
+    },
   }),
   copy({
     targets: [

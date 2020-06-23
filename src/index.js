@@ -1,3 +1,6 @@
+import React from 'react'
+import ReactDOM from 'react-dom'
+import App from './pages/Home'
 import './css/tokens.css'
 
-console.log(`hye`)
+ReactDOM.render(<App />, document.getElementById('root'))
