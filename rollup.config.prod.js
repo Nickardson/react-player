@@ -2,12 +2,14 @@ import { string } from 'rollup-plugin-string'
 import { terser } from 'rollup-plugin-terser'
 import analyze from 'rollup-plugin-analyzer'
 import babel from 'rollup-plugin-babel'
+import commonjs from '@rollup/plugin-commonjs'
+import copy from 'rollup-plugin-copy'
+import html from 'rollup-plugin-html-scaffold'
 import filesize from 'rollup-plugin-filesize'
 import json from '@rollup/plugin-json/dist'
 import postcss from 'rollup-plugin-postcss'
 import progress from 'rollup-plugin-progress'
 import resolve from 'rollup-plugin-node-resolve'
-import commonjs from '@rollup/plugin-commonjs'
 import pkg from './package.json'
 
 const input = ['src/index.js']
@@ -59,6 +61,21 @@ const plugins = [
   terser({ sourcemap: false }),
   analyze(),
   filesize(),
+  html({
+    input: './public/index.html',
+    output: './build/index.html',
+    template: { appBundle: 'index.js' },
+  }),
+  copy({
+    targets: [
+      { src: 'public/manifest.json', dest: 'build/' },
+      { src: 'public/favicon.ico', dest: 'build/' },
+      { src: 'public/logo192.png', dest: 'build/' },
+      { src: 'public/logo512.png', dest: 'build/' },
+      { src: 'public/robots.txt', dest: 'build/' },
+    ],
+    verbose: true,
+  }),
 ]
 
 const outputData = [
