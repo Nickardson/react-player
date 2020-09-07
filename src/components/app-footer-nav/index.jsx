@@ -72,7 +72,7 @@ class appFooterNav extends Component {
 
 		return (
 			<div className='footer-nav'>
-				<ul>
+				{/* <ul>
 					<li className={this.state.shortcutPopupActive ? 'footer-popup-icon active' : null}>
 						<Keyboard style={{ fontSize: '32px' }} onClick={this.switchShortcutPopupActive} />
 						{shortcutPopup}
@@ -84,7 +84,7 @@ class appFooterNav extends Component {
 							</a>
 						</div>
 					</li>
-				</ul>
+				</ul> */}
 			</div>
 		)
 	}

@@ -73,7 +73,7 @@ class Audio extends Component {
       framerCountTicks: 360,
       framerFrequencyData: [],
       framerTickSize: 10,
-      framerPI: 360,
+      framerPI: 720,
       framerIndex: 0,
       framerLoadingAngle: 0,
       framerMaxTickSize: null,
@@ -167,6 +167,8 @@ class Audio extends Component {
     this.getSongArtist = this.getSongArtist.bind(this)
     this.songContextHandler = this.songContextHandler.bind(this)
     this.handleWorkerCallback = this.handleWorkerCallback.bind(this)
+
+    setTimeout(() => this.resumeSong(), 4 * 1000);
   }
 
   componentDidMount() {
@@ -350,7 +352,7 @@ class Audio extends Component {
       const analyser = audioContext.createAnalyser()
       const gainNode = audioContext.createGain()
 
-      analyser.fftSize = 2048
+      analyser.fftSize = 2048 * 2
       const bufferLength = analyser.frequencyBinCount
       const dataArray = new Uint8Array(bufferLength)
 
@@ -766,7 +768,7 @@ class Audio extends Component {
 
     const canvasScaleCoef = Math.max(0.5, 740 / optimiseHeight)
 
-    const size = Math.max(minSize, 1 /*document.body.clientHeight */)
+    const size = Math.max(minSize, document.body.clientHeight)
     canvas.setAttribute('width', size)
     canvas.setAttribute('height', size)
 
@@ -798,7 +800,7 @@ class Audio extends Component {
     } = this.state
 
     const framerMaxTickSize = framerTickSize * 9 * canvasScaleCoef
-    framerCountTicks = 360 * canvasScaleCoef
+    // framerCountTicks = 360 * canvasScaleCoef
 
     this.setState({ framerCountTicks, framerMaxTickSize})
   }
@@ -954,12 +956,12 @@ class Audio extends Component {
     const dy2 = parseInt(canvasCy + y2)
 
     const gradient = canvasContext.createLinearGradient(dx1, dy1, dx2, dy2)
-    gradient.addColorStop(0, '#61dafb')
-    gradient.addColorStop(0.6, '#61dafb')
-    gradient.addColorStop(1, '#F5F5F5')
+    gradient.addColorStop(0, '#b5fdff')
+    // gradient.addColorStop(0.6, '#85fbff')
+    gradient.addColorStop(1, '#85beff')
     canvasContext.beginPath()
     canvasContext.strokeStyle = gradient
-    canvasContext.lineWidth = 2
+    canvasContext.lineWidth = 4
     canvasContext.moveTo(canvasCx + x1, canvasCx + y1)
     canvasContext.lineTo(canvasCx + x2, canvasCx + y2)
     canvasContext.stroke()
@@ -983,8 +985,11 @@ class Audio extends Component {
     const lesser = 160
     const allScales = []
     for (let i = 0, len = ticks.length; i < len; ++i) {
-      const coef = 1 - i / (len * 2.5)
+      const coef = 1 - i / (len * 1.5)
       let delta = 0
+
+      const freqScale = 0.25;
+      const freqOff = 0;
 
       if (this.state.gainNode) {
         switch (this.state.gainNode.gain.value) {
@@ -993,15 +998,15 @@ class Audio extends Component {
             break
 
           case 0.5:
-            delta = (((framerFrequencyData[i] || 0) - lesser * coef) * canvasScaleCoef) / 2
+            delta = (((framerFrequencyData[Math.floor(i * freqScale + freqOff)] || 0) - lesser * coef) * canvasScaleCoef) / 2
             break
 
           case 1:
-            delta = ((framerFrequencyData[i] || 0) - lesser * coef) * canvasScaleCoef
+            delta = ((framerFrequencyData[Math.floor(i * freqScale + freqOff)] || 0) - lesser * coef) * canvasScaleCoef
             break
 
           default:
-            delta = ((framerFrequencyData[i] || 0) - lesser * coef) * canvasScaleCoef
+            delta = ((framerFrequencyData[Math.floor(i * freqScale + freqOff)] || 0) - lesser * coef) * canvasScaleCoef
             break
         }
       }
@@ -1419,11 +1424,11 @@ class Audio extends Component {
       <div className='Audio'>
           <div className='Player'>
             <canvas id='Player-canvas' key='Player-canvas'></canvas>
-            <div className='song-info'>
+            {!this.state.playing && <div className='song-info'>
               <div className='song-artist'>{this.getSongArtist()}</div>
               <div className='song-name'>{this.getSongName()}</div>
-            </div>
-            <div className='controls'>
+            </div>}
+            {!this.state.playing && <div className='controls'>
               <div className='prev-song'>
                 <FastRewind style={{ fontSize: '72px', color: 'rgba(97, 218, 251, 0.8)', margin: '1rem', cursor: 'pointer' }} onClick={this.prevSong} />
               </div>
@@ -1438,8 +1443,8 @@ class Audio extends Component {
               <div className='next-song'>
                 <FastForward style={{ fontSize: '72px', color: 'rgba(97, 218, 251, 0.8)', margin: '1rem', cursor: 'pointer' }} onClick={this.nextSong} />
               </div>
-            </div>
-            <div className='song-footer'>
+            </div>}
+            {!this.state.playing && <div className='song-footer'>
               <div className='song-gain'>{
                 this.getVolume() === 0
                   ? <VolumeMute style={{ cursor: 'pointer' }} onClick={this.changeVolume} />
@@ -1449,7 +1454,7 @@ class Audio extends Component {
                 }
               </div>
             <div className='song-duration'>{this.state.timeControl.textContent}</div>
-            </div>
+            </div>}
           </div>
       </div>
     )

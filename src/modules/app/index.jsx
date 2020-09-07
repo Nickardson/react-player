@@ -10,6 +10,7 @@ import AppVersion from 'components/app-version'
 /**
  * music
  */
+import sansMix from 'assets/music/sans.wav'
 import rise from 'assets/music/rise.mp3'
 import fantastic from 'assets/music/fantastic.mp3'
 import legendsNeverDie from 'assets/music/legends-never-die.mp3'
@@ -24,6 +25,11 @@ class App extends Component {
 		 */
 		this.state = {
 			tracks: [
+				{
+					name: 'sans. Mix',
+					artist: '...',
+					url: sansMix
+				},
 				{
 					name: 'Small Piece of music LND',
 					artist: 'League of Legends',
